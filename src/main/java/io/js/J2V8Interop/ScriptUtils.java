@@ -5,7 +5,7 @@ import org.apache.commons.io.IOUtils;
 
 public class ScriptUtils {
     public static <T> String getScriptSource(T thiz) {
-        Class cls = thiz.getClass();
+        Class<?> cls = thiz.getClass();
         return getScriptSource(cls.getClassLoader(), cls.getName() + ".js");
     }
     public static <T> String getScriptSource(T thiz, String path) {

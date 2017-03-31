@@ -39,4 +39,5 @@ export class J2V8
     }
 }
 
+// TODO: get .d.ts type annotations correctly exported for this (configure webpack .d.ts generator)
 (global as any).J2V8 = J2V8;

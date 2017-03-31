@@ -1,8 +1,6 @@
 package io.js.J2V8Interop;
 
 import com.eclipsesource.v8.*;
-import java.io.*;
-// import java.lang.reflect.*;
 
 public class J2V8Interop {
 
@@ -44,9 +42,9 @@ public class J2V8Interop {
 
                     Class<?> clazz = Class.forName(className);
 
-                    JavaTypeInfo typeInfo = new JavaTypeInfo(runtime, clazz);
+                    V8Object typeInfo = JavaTypeInfoGenerator.getJavaTypeInfo(runtime, clazz);
                     System.out.println("after typeinfo for " + clazz);
-                    return typeInfo.getTypeInfo();
+                    return typeInfo;
                 }
                 catch (ClassNotFoundException e) {
                     e.printStackTrace();

@@ -5,6 +5,13 @@ const path = require('path');
 
 const JObject = J2V8.import("java.lang.Object");
 
+global.prune_options = {replacer:function(value, defaultValue, circular){
+	if (value === undefined) return '"-undefined-"';
+	return '"-' + (circular ? '$' : '') + '('+value.name+')-"';
+}};
+
+global.JSON.prune = require('json-prune');
+
 global.JObject = JObject;
 
 // global.obj = new JObject();

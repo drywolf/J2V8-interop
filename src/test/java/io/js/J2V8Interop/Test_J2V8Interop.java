@@ -67,7 +67,7 @@ public class Test_J2V8Interop {
                 System.out.println("Node.js Result: " + result);
 
                 V8 v8 = njs.getRuntime();
-                String debug = v8.executeStringScript("JSON.stringify(global.JObject, null, 2)");
+                String debug = v8.executeStringScript("JSON.prune(global.JObject, global.prune_options)");
                 System.out.println("DEBUG " + debug);
 
                 Assert.assertEquals(true, v8.executeBooleanScript("global.equals"));
