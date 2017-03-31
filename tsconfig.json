@@ -1,0 +1,23 @@
+{
+    "compilerOptions": {
+        "allowJs": false,
+        "experimentalDecorators": true,
+        "forceConsistentCasingInFileNames": true,
+        "declaration": true,
+        "module": "commonjs",
+        "noImplicitAny": true,
+        "noEmitOnError": true,
+        "noImplicitReturns": true,
+        "noImplicitThis": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "outDir": "./src/main/resources/",
+        "outFile": "./src/main/resources/J2V8Interop.js",
+        "strictNullChecks": true,
+        "stripInternal": true,
+        "target": "es2016"
+    },
+    "files": [
+        "./src/main/resources/J2V8Interop.ts"
+    ]
+}
