@@ -10,6 +10,7 @@ public class JavaHeapEntry {
         this.javaObject = javaObject;
         this.javaPtr = javaObject.hashCode();
         this.jsPtr = new V8Object(runtime);
-        this.jsPtr.add("__javaPtr", this.javaPtr);
+        this.jsPtr.add("__ptr", this.javaPtr);
+        this.jsPtr.add("__cls", javaObject.getClass().getName());
     }
 }

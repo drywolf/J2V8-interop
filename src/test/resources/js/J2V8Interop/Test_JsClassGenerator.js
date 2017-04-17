@@ -1,49 +1,6 @@
 
 const JsCG = global.J2V8Interop.JsClassGenerator;
 
-function assert(a, b)
-{
-    if (a !== b || typeof a !== 'string' || typeof b !== 'string')
-        throw new Error(`Assert failed:\r\nExpected: ${a}\r\nGot: ${b}`);
-}
-
-function assertPropEqual(a, b, test_name)
-{
-    let ap = JSON.stringify(Object.getOwnPropertyDescriptors(a), null, 2);
-    let bp = JSON.stringify(Object.getOwnPropertyDescriptors(b), null, 2);
-    print("--------------------------------------------------")
-    print("test: " + test_name);
-    print("--------------------------------------------------")
-    print(typeof a);
-    print(typeof b);
-    assert(typeof a, typeof b);
-    print(ap);
-    print(bp);
-    assert(ap, bp);
-}
-
-function assertObjectEqual(a, b, test_name)
-{
-    let ao = JSON.stringify(a, null, 2);
-    let bo = JSON.stringify(b, null, 2);
-    print("--------------------------------------------------")
-    print("test: " + test_name);
-    print("--------------------------------------------------")
-    print(ao);
-    print(bo);
-    assert(ao, bo);
-}
-
-function assertClassEqual(a, b)
-{
-    assert(a.name, b.name);
-    assertPropEqual(a, b, "$");
-    assertPropEqual(a.constructor, b.constructor, "$.constructor");
-    assertPropEqual(a.prototype, b.prototype, "$.prototype");
-    print(a.prototype.constructor.name + " , " + b.prototype.constructor.name);
-    assertPropEqual(a.prototype.constructor, b.prototype.constructor, "$.prototype.constructor");
-}
-
 let A = class A extends Object
 {
     constructor(x)
@@ -61,7 +18,7 @@ function(x)
     //Object.apply(this);
     //this.super();
     this.x = x[0];
-    print("THIIIIS: " + JSON.stringify(this));
+    print("THIS: " + JSON.stringify(this));
     //return this;
 },
 clazz =>
@@ -118,13 +75,13 @@ function([x])
     /// super(x)
     let thiz = Reflect.construct(B, [x], Y);
     
-    print("THIIIIS3-in: " + JSON.stringify(thiz));
+    print("THIS-in: " + JSON.stringify(thiz));
 
     //Reflect.apply(B, this, [1]);
     //B.call(Y, [x[0]]);
     // B.prototype.constructor.call(this, 1)
     //Object.setPrototypeOf(this, new.target.prototype);
-    print("THIIIIS3-out: " + JSON.stringify(thiz));
+    print("THIS-out: " + JSON.stringify(thiz));
 
     //return this;
     return thiz;
@@ -266,10 +223,10 @@ print("------myclass---------")
 let myc = new MyClass();
 myc.testMethod1();
 
-print(A.toString());
-print(B.toString());
-print(X.toString());
-print(Y.toString());
+// print(A.toString());
+// print(B.toString());
+// print(X.toString());
+// print(Y.toString());
 
 // print("a = " + JSON.stringify(a));
 // print("b = " + JSON.stringify(b));

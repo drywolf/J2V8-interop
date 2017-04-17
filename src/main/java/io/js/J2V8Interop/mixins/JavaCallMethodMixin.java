@@ -19,7 +19,7 @@ public class JavaCallMethodMixin
             public V8Value invoke(final V8Object receiver, final V8Array parameters) {
                 V8Stackframe f = new V8Stackframe();
 
-                int __javaPtr = parameters.getInteger(0);
+                int __ptr = parameters.getInteger(0);
                 int methodHash = parameters.getInteger(1);
                 V8Array jsArgs = f.getArray(parameters, 2);
 
@@ -33,7 +33,7 @@ public class JavaCallMethodMixin
                     javaArgs[i] = javaHeap.getJObjfromJSBox(ptrBox);
                 }
 
-                Object thiz = javaHeap.getJObjfromPtr(__javaPtr);
+                Object thiz = javaHeap.getJObjfromPtr(__ptr);
                 Class<?> clazz = thiz.getClass();
 
                 Method m = Arrays.asList(clazz.getDeclaredMethods())
@@ -44,10 +44,8 @@ public class JavaCallMethodMixin
 
                 try {
                     Object javaReturn = m.invoke(thiz, javaArgs);
-                    // TODO: box return to JS
-                    V8Object jsReturn = new V8Object(v8rt);
-                    jsReturn.add("value", (boolean)javaReturn);
-                    return jsReturn;
+                    V8Object returnBox = InteropBoxUtils.boxJavaObject(javaHeap, v8rt, javaReturn);
+                    return returnBox;
                 }
                 catch (Exception e)
                 {

@@ -1,11 +1,14 @@
 
-import {JavaTypeRegistry, JavaTypeInfo} from './JavaTypeRegistry';
+import {JavaTypeRegistry} from './JavaTypeRegistry';
+import {JsClassGenerator2} from './JsClassGenerator2';
+
 export {JsClassGenerator} from './JsClassGenerator';
 export {JsClassGenerator2} from './JsClassGenerator2';
 
 export class J2V8
 {
-    public static import(classname: string): JavaTypeInfo | null
+    // TODO: define separate constructible type and reuse it where needed
+    public static import(classname: string): {new(...args: any[]): any} | null
     {
         // console.log(classname);
         // return null;
@@ -13,8 +16,13 @@ export class J2V8
         // __javaGetClassInfo(classname);
         // return J2V8;
 
-        let type = JavaTypeRegistry.instance.resolveType(classname);
-        return type;
+        let typeInfo = JavaTypeRegistry.instance.resolveType(classname);
+
+        if (typeInfo === null)
+            return null;
+
+        let jsClass = JsClassGenerator2.createClass(typeInfo)
+        return jsClass;
     }
 
     // TODO: just for testing temporarily

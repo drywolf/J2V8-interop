@@ -21,6 +21,16 @@ public class JavaObjectHeap
         heapEntries.clear();
     }
 
+    public boolean contains(Object javaObject)
+    {
+        return heapEntries.containsKey(javaObject);
+    }
+
+    public JavaHeapEntry getEntry(Object javaObject)
+    {
+        return heapEntries.get(javaObject);
+    }
+
     public JavaHeapEntry put(Object javaObject)
     {
         int javaObjHash = javaObject.hashCode();
@@ -31,7 +41,7 @@ public class JavaObjectHeap
 
     public Object getJObjfromJSBox(V8Object ptrBox)
     {
-        int javaPtr = ptrBox.getInteger("__javaPtr");
+        int javaPtr = ptrBox.getInteger("__ptr");
         JavaHeapEntry javaArg = heapEntries.get(javaPtr);
         return javaArg.javaObject;
     }

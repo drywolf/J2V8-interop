@@ -70,16 +70,19 @@ public class JavaTypeInfoGenerator {
         Method[] javaMethods = classType.getDeclaredMethods();
 
         // DEBUGGING
-        Map<String, Long> counting =
-            Arrays.asList(javaMethods).stream()
-            .collect(Collectors.groupingBy(Method::getName, Collectors.counting()))
-            .entrySet().stream()
-            .filter(x -> x.getValue() > 1)
-            .sorted((a, b) -> a.getKey().compareTo(b.getKey()))
-            .collect(Collectors.toMap(k -> k.getKey(), v -> v.getValue()));
+        // Map<String, Long> counting =
+        //     Arrays.asList(javaMethods).stream()
+        //     .collect(Collectors.groupingBy(Method::getName, Collectors.counting()))
+        //     .entrySet().stream()
+        //     .filter(x -> x.getValue() > 1)
+        //     .sorted((a, b) -> a.getKey().compareTo(b.getKey()))
+        //     .collect(Collectors.toMap(k -> k.getKey(), v -> v.getValue()));
 
-        if (counting.size() > 0)
-            System.out.println("OVERLOADED: " + counting);
+        // if (counting.size() > 0)
+        // {
+        //     System.out.println("OVERLOADs: " + javaTypeName);
+        //     System.out.println("OVERLOADED: " + counting);
+        // }
 
         for (Method javaMethod : javaMethods) {
 

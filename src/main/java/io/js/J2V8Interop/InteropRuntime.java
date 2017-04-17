@@ -1,8 +1,6 @@
 package io.js.J2V8Interop;
 
 import com.eclipsesource.v8.*;
-import java.util.*;
-import java.lang.reflect.*;
 
 public class InteropRuntime {
 

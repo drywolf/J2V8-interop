@@ -121,6 +121,14 @@ public class Test_J2V8Interop implements ReferenceHandler {
 
         J2V8Interop.injectInteropRuntime(njs);
 
+        v8.registerJavaMethod(new JavaVoidCallback()
+        {
+            public void invoke(final V8Object receiver, final V8Array parameters) {
+                String msg = parameters.getString(0);
+                System.out.println(msg);
+            }
+        }, "print");
+
         // TODO: remove absolute path strings from all files
         File script = new File("C:/code/J2V8-interop/src/test/resources/js/J2V8Interop/Test_J2V8Interop.js");
 
@@ -201,10 +209,6 @@ public class Test_J2V8Interop implements ReferenceHandler {
             // v8.executeObjectScript("global.__javaGetTypeInfo");
             // v8.executeObjectScript("global.__javaCreateInstance");
             // v8.executeObjectScript("global.__javaCallMethod");
-
-            String dbg = v8.executeStringScript("JSON.stringify(Object.keys(global))");
-            System.out.println("global: " + dbg);
-
 
             // V8Object glob = v8.getObject("global");
             // glob.release();

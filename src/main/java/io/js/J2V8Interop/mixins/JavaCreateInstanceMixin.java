@@ -23,8 +23,7 @@ public class JavaCreateInstanceMixin
                 
                 String __javaPackage = jsClass.getString("__javaPackage");
                 String __javaClassName = jsClass.getString("__javaClassName");
-                int __javaClassHash = jsClass.getInteger("__javaClassHash");
-                System.out.println("-------> __javaCreateInstance " + __javaClassName);
+                //int __javaClassHash = jsClass.getInteger("__javaClassHash");
                 
                 // Class<?> javaClass = JavaTypeInfoGenerator._types.get(__javaClassHash);
                 Class<?> javaClass;
@@ -37,7 +36,7 @@ public class JavaCreateInstanceMixin
                     Object javaObj = javaCtor.newInstance(new Object[] {});
 
                     JavaHeapEntry heapEntry = javaHeap.put(javaObj);
-                    jsInstance.add("__javaPtr", heapEntry.javaPtr);
+                    jsInstance.add("__ptr", heapEntry.javaPtr);
                     return heapEntry.jsPtr;
                 }
                 catch (Exception e)

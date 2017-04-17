@@ -1,10 +1,12 @@
 import * as _ from 'lodash';
 
 import {JavaTypeInfo} from './JavaTypeRegistry';
+// import {J2V8} from './J2V8Interop';
+import {JsProxyHeap, JsHeapEntry} from './JsProxyHeap';
 
 declare function print(message: string): void;
-declare function __javaCreateInstance(target_class: JavaClassProxy, instance: any): void;
-declare function __javaCallMethod(__javaPtr: number, methodHash: number, args: any[]): any;
+declare function __javaCreateInstance(target_class: JavaClassProxy, instance: any): JsHeapEntry;
+declare function __javaCallMethod(__ptr: number, methodHash: number, args: any[]): any;
 
 interface JavaClassProxy
 {
@@ -17,10 +19,11 @@ class JavaInstanceProvider
 {
     public static initJavaInstance(target_class: JavaClassProxy, instance: any)
     {
-        // TODO: call Java factory then set __javaPtr on instance
+        // TODO: call Java factory then set __ptr on instance
         print("new java instance for instance " + instance + " with class " + target_class.__javaClassName);
 
-        __javaCreateInstance(target_class, instance);
+       let heapEntry = __javaCreateInstance(target_class, instance);
+       JsProxyHeap.instance.putEntry(heapEntry);
     }
 }
 
@@ -45,7 +48,16 @@ class $__JsProxyClassName__$ extends $__JsProxySuperClassName__$
         //print("------------> new.target " + (new.target as any).__javaPackage);
         //print("------------> new.target " + (new.target as any).__javaClassName);
         //print("------------> new.target " + (new.target as any).__javaClassHash);
-        JavaInstanceProvider.initJavaInstance(new.target as any, this);
+
+        let arg0 = (arguments.length > 0 && arguments[0]) || undefined;
+        if (arg0 && arg0.__ptr)
+        {
+            //throw new Error("working until here")
+        }
+        else
+        {
+            JavaInstanceProvider.initJavaInstance(new.target as any, this);
+        }
 
         $__CtorArgs__$;
     }
@@ -64,16 +76,31 @@ function $__JsMethod__$($__MethodArgs__$: any)
 {
     $__MethodArgs__$;
 
-    // print("function $__JsMethod__$ --> this.__javaPtr = " + this.__javaPtr);
+    // print("function $__JsMethod__$ --> this.__ptr = " + this.__ptr);
 
-    if (!this.__javaPtr)
+    // TODO: define correct behavior for this situation
+    if (!this.__ptr)
+    {
+        print(`Warning: ignoring JS method-call "function $__JsMethod__$" because the call-target is not defined`);
         return;
+    }
 
     // TODO: proper marshalling of JS values to Java values
-    let marshalledArgs = _.map(arguments, arg => { return { __javaPtr: arg.__javaPtr } });
+    let boxedArgs = _.map(arguments, arg => { return { __ptr: arg.__ptr } });
     // print("jsBoxedArgs: " + JSON.stringify(marshalledArgs));
-    let javaReturn = __javaCallMethod(this.__javaPtr, $__MethodHash__$, marshalledArgs);
-    return javaReturn.value;
+    let returnBox = __javaCallMethod(this.__ptr, $__MethodHash__$, boxedArgs);
+
+    if (returnBox.__ptr)
+    {
+        // TODO: unbox the ptr to the JS class instance off the heap
+        //throw new Error("TODO: unbox the ptr to the JS class instance off the heap");
+        // let clazz = J2V8.import(returnBox.__cls);
+
+        let entry = JsProxyHeap.instance.getOrCreateInstance(returnBox);
+        return entry.__val;
+    }
+
+    return returnBox.__val;
 }
 
 const JsProxyClassTemplateString: string = $__JsProxyClassName__$.toString();
@@ -82,7 +109,7 @@ const JsMethodTemplateString: string = $__JsMethod__$.toString();
 
 export class JsClassGenerator2
 {
-    public static createClass(javaType: JavaTypeInfo): {new: (...args: any[]) => any}
+    public static createClass(javaType: JavaTypeInfo): {new(...args: any[]): any}
     {
         //print("template " + JsProxyClassTemplateString);
         let classCode: string = /*"(function() {" + */JsProxyClassTemplateString;
@@ -133,7 +160,6 @@ export class JsClassGenerator2
             methodCode = methodCode.replace(/\$__MethodHash__\$/g, method.hash.toString());
 
             methodCodes += methodCode + "\r\n";
-            print("-----------------> GEEEEEEEEEEEEEN " + methodName);
         }
 
         classCode = classCode.replace(/\$__MethodProxies__\$\(\)\s*{\s*}/g, methodCodes);
@@ -150,9 +176,9 @@ export class JsClassGenerator2
 
         //print("METHODS: " + methodCodes);
 
-        print("generated class: " + javaType.name);
-        print("#methods: " + Object.keys(javaType.methods).length);
-        print("#constructors: " + Object.keys(javaType.constructors).length);
+        // print("generated class: " + javaType.name);
+        // print("#methods: " + Object.keys(javaType.methods).length);
+        // print("#constructors: " + Object.keys(javaType.constructors).length);
 
         //print(classCode);
         // TODO: for debugging only
