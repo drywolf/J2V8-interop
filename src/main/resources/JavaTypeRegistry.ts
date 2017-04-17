@@ -2,14 +2,21 @@ declare function __javaGetTypeInfo(classname: string): JavaTypeInfo;
 
 export interface JavaTypeInfo
 {
+    package: string;
     name: string;
+    hash: number;
+    hashstr: number;
+
+    constructors: { [name: string]: JavaMethodInfo; };
     methods: { [name: string]: JavaMethodInfo; };
 }
 
 export interface JavaMethodInfo
 {
     name: string;
-    args: { [name: string]: JavaMethodArgInfo; };
+    hash: number;
+    hashstr: number;
+    args: JavaMethodArgInfo[];
 }
 
 export interface JavaMethodArgInfo
@@ -20,10 +27,13 @@ export interface JavaMethodArgInfo
 
 export class JavaTypeRegistry
 {
-    private _types: { [name: string]: JavaTypeInfo; } = {};
+    private _types: { [name: string]: JavaTypeInfo; } | null = {};
 
-    public resolveType(typename: string): JavaTypeInfo
+    public resolveType(typename: string): JavaTypeInfo | null
     {
+        if (this._types === null)
+            return null;
+
         let type = this._types[typename];
 
         if (!type)

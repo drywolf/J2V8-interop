@@ -8,14 +8,14 @@
         "noImplicitAny": true,
         "noEmitOnError": true,
         "noImplicitReturns": true,
-        "noImplicitThis": true,
+        "noImplicitThis": false,
         "noUnusedLocals": true,
         "noUnusedParameters": true,
         "outDir": "./src/main/resources/",
         "outFile": "./src/main/resources/J2V8Interop.js",
         "strictNullChecks": true,
         "stripInternal": true,
-        "target": "es2016"
+        "target": "es2017"
     },
     "files": [
         "./src/main/resources/J2V8Interop.ts"

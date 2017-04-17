@@ -1,31 +1,73 @@
 package io.js.J2V8Interop;
 
 import com.eclipsesource.v8.*;
+import com.eclipsesource.v8.utils.*;
 import java.lang.reflect.*;
 import java.util.*;
 import java.util.stream.*;
 
 public class JavaTypeInfoGenerator {
 
-    private static HashMap<Class<?>, V8Object> _types = new HashMap<>();
+    private static HashSet<V8Object> _returnTypes = new HashSet<>();
+    private static HashMap<Integer, V8Object> _types = new HashMap<>();
 
-    public static V8Object getJavaTypeInfo(V8 runtime, Class<?> clazzType) {
+    public static void release()
+    {
+        for (V8Object typeInfo : _types.values()) {
+            if (!typeInfo.isReleased())
+                typeInfo.release();
+        }
+    }
 
-        V8Object typeInfo = _types.get(clazzType);
+    public static V8Object getJavaTypeInfo(V8 runtime, Class<?> classType) {
+
+        int classHash = classType.hashCode();
+        String classHashStr = Long.toString(classHash & 0xFFFFFFFFL);
+
+        V8Object typeInfo = _types.get(classHash);
 
         if (typeInfo != null)
             return typeInfo;
 
         typeInfo = new V8Object(runtime);
-        _types.put(clazzType, typeInfo);
+        _types.put(classHash, typeInfo);
 
-        String javaTypeName = clazzType.getName();
+        //String packageName = classType.getPackage().getName();
+        String packageName = "";
+        String javaTypeName = classType.getName();
+        int classNameStartIdx = javaTypeName.lastIndexOf('.');
 
+        if (classNameStartIdx >= 0)
+        {
+            packageName = javaTypeName.substring(0, classNameStartIdx);
+            javaTypeName = javaTypeName.substring(classNameStartIdx + 1);
+        }
+
+        typeInfo.add("package", packageName);
         typeInfo.add("name", javaTypeName);
+        typeInfo.add("hash", classHash);
+        typeInfo.add("hashstr", classHashStr);
+
+        V8Object jsCtors = new V8Object(runtime);
+        runtime.registerResource(jsCtors);
+        typeInfo.add("constructors", jsCtors);
+
         V8Object jsMethods = new V8Object(runtime);
+        runtime.registerResource(jsMethods);
         typeInfo.add("methods", jsMethods);
 
-        Method[] javaMethods = clazzType.getDeclaredMethods();
+        Constructor[] javaCtors = classType.getDeclaredConstructors();
+
+        for (Constructor javaCtor : javaCtors) {
+
+            // skip private methods
+            if (Modifier.isPrivate(javaCtor.getModifiers()))
+                continue;
+
+            getJavaCtorInfo(runtime, javaCtor, jsCtors);
+        }
+
+        Method[] javaMethods = classType.getDeclaredMethods();
 
         // DEBUGGING
         Map<String, Long> counting =
@@ -51,18 +93,49 @@ public class JavaTypeInfoGenerator {
         return typeInfo;
     }
 
+    public static V8Object getJavaCtorInfo(V8 runtime, Constructor javaCtor, V8Object jsCtors) {
+
+        // TODO: is this a feasible way to support overloads ??!
+        String javaCtorName = "constructor";
+        int javaCtorHash = javaCtor.hashCode();
+        String javaCtorHashStr = Long.toString(javaCtorHash & 0xFFFFFFFFL);
+
+        V8Object jsCtor = new V8Object(runtime);
+        runtime.registerResource(jsCtor);
+        jsCtors.add(javaCtorName, jsCtor);
+        jsCtor.add("hash", javaCtorHash);
+        jsCtor.add("hashstr", javaCtorHashStr);
+
+        V8Array jsCtorArgs = new V8Array(runtime);
+        runtime.registerResource(jsCtorArgs);
+        jsCtor.add("args", jsCtorArgs);
+
+        Parameter[] javaArgs = javaCtor.getParameters();
+
+        for (Parameter javaArg : javaArgs)
+            getJavaMethodArgInfo(runtime, javaArg, jsCtorArgs);
+
+        return jsCtor;
+    }
+
     public static V8Object getJavaMethodInfo(V8 runtime, Method javaMethod, V8Object jsMethods) {
 
         // TODO: is this a feasible way to support overloads ??!
-        String javaMethodName = javaMethod.getName() + "_" + javaMethod.hashCode();
+        String javaMethodName = javaMethod.getName();
+        int javaMethodHash = javaMethod.hashCode();
+        String javaMethodHashStr = Long.toString(javaMethodHash & 0xFFFFFFFFL);
 
         V8Object jsMethod = new V8Object(runtime);
+        runtime.registerResource(jsMethod);
         jsMethods.add(javaMethodName, jsMethod);
         jsMethod.add("name", javaMethodName);
+        jsMethod.add("hash", javaMethodHash);
+        jsMethod.add("hashstr", javaMethodHashStr);
 
         getJavaMethodReturnInfo(runtime, javaMethod, jsMethod);
 
         V8Array jsMethodArgs = new V8Array(runtime);
+        runtime.registerResource(jsMethodArgs);
         jsMethod.add("args", jsMethodArgs);
 
         Parameter[] javaArgs = javaMethod.getParameters();
@@ -78,6 +151,7 @@ public class JavaTypeInfoGenerator {
         Class<?> javaReturnType = javaMethod.getReturnType();
         V8Object jsReturnType = getJavaTypeInfo(runtime, javaReturnType);
         jsMethod.add("return", jsReturnType);
+        _returnTypes.add(jsReturnType);
         return jsReturnType;
     }
 
@@ -86,6 +160,7 @@ public class JavaTypeInfoGenerator {
         String javaArgName = javaArg.getName();
 
         V8Object jsArg = new V8Object(runtime);
+        runtime.registerResource(jsArg);
         jsMethodArgs.push(jsArg);
         jsArg.add("name", javaArgName);
 

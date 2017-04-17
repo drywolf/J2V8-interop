@@ -1,11 +1,13 @@
 
 import {JavaTypeRegistry, JavaTypeInfo} from './JavaTypeRegistry';
+export {JsClassGenerator} from './JsClassGenerator';
+export {JsClassGenerator2} from './JsClassGenerator2';
 
 export class J2V8
 {
-    public static import(classname: string): JavaTypeInfo
+    public static import(classname: string): JavaTypeInfo | null
     {
-        console.log(classname);
+        // console.log(classname);
         // return null;
         // TODO: generate Java class proxies
         // __javaGetClassInfo(classname);
@@ -13,11 +15,6 @@ export class J2V8
 
         let type = JavaTypeRegistry.instance.resolveType(classname);
         return type;
-    }
-
-    public static release()
-    {
-        console.log("release");
     }
 
     // TODO: just for testing temporarily

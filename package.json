@@ -6,9 +6,12 @@
   "author": "DryWolf",
   "license": "MIT",
   "dependencies": {
+    "@types/lodash": "^4.14.62",
     "@types/node": "^7.0.12",
+    "@types/webpack": "^2.2.14",
     "awesome-typescript-loader": "^3.1.2",
     "json-prune": "^1.0.1",
+    "lodash": "^4.17.4",
     "typescript": "^2.2.2",
     "webpack": "^2.3.2"
   }

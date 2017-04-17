@@ -4,11 +4,28 @@ import com.eclipsesource.v8.*;
 import java.io.*;
 import java.nio.charset.*;
 import java.nio.file.*;
+import java.util.*;
 
 import org.junit.*;
 import org.junit.rules.*;
+import net.jcip.annotations.NotThreadSafe;
 
-public class Test_J2V8Interop {
+@NotThreadSafe
+public class Test_J2V8Interop implements ReferenceHandler {
+
+    private HashSet<V8Value> hm = new HashSet<>();
+    private List<String> hm2 = new ArrayList<>();
+
+    public void v8HandleCreated(V8Value object)
+    {
+        hm.add(object);
+    }
+
+    public void v8HandleDisposed(V8Value object)
+    {
+        hm.remove(object);
+    }
+
     @Rule
     public ExpectedException injectEx = ExpectedException.none();
 
@@ -21,6 +38,7 @@ public class Test_J2V8Interop {
             J2V8Interop.injectInteropRuntime(njs);
         }
         finally {
+            System.out.println("-----------> injectRuntime");
             J2V8Interop.releaseInterop(njs);
             njs.release();
         }
@@ -38,6 +56,7 @@ public class Test_J2V8Interop {
             J2V8Interop.injectInteropRuntime(njs);
         }
         finally {
+            System.out.println("-----------> injectRuntimeTwice");
             J2V8Interop.releaseInterop(njs);
             njs.release();
         }
@@ -55,32 +74,69 @@ public class Test_J2V8Interop {
         }
     }
 
-    @Test
+    boolean cont = false;
+
+    @Test // NOTE: temporarily disabled
     public void java_lang_Object_basicInterop() {
         NodeJS njs = NodeJS.createNodeJS();
+        V8 v8 = njs.getRuntime();
+
+        v8.addReferenceHandler(this);
 
         J2V8Interop.injectInteropRuntime(njs);
 
+        // TODO: remove absolute path strings from all files
         File script = new File("C:/code/J2V8-interop/src/test/resources/js/J2V8Interop/Test_J2V8Interop.js");
+
+        System.out.println("BEFORE exec");
         njs.exec(script, new NodeJsExecCallback() {
             public void receiveResult(Object result) {
                 System.out.println("Node.js Result: " + result);
 
-                V8 v8 = njs.getRuntime();
-                String debug = v8.executeStringScript("JSON.prune(global.JObject, global.prune_options)");
-                System.out.println("DEBUG " + debug);
-
-                Assert.assertEquals(true, v8.executeBooleanScript("global.equals"));
-                Assert.assertEquals(123456, v8.executeScript("global.hashCode"));
-                Assert.assertEquals("hello world!", v8.executeStringScript("global.toString"));
-
-                J2V8Interop.releaseInterop(njs);
+                // System.out.println("-----------> java_lang_Object_basicInterop");
+                // J2V8Interop.releaseInterop(njs);
+                // njs.release();
+                System.out.println("EXEC OK");
+                cont = true;
             }
 
             public void receiveError(Throwable error) {
                 System.out.println("Node.js Error: " + error);
+                System.out.println("EXEC ERROR");
+                cont = true;
             }
         });
+
+        while (njs.isRunning()) {
+            njs.handleMessage();
+        }
+
+        System.out.println("Waiting for EXEC");
+        while (!cont) ;
+
+        System.out.println("EXEC arrived");
+
+        //String debug = v8.executeStringScript("JSON.prune(global.JObject, global.prune_options)");
+        //System.out.println("DEBUG " + debug);
+
+        Assert.assertEquals(true, v8.executeBooleanScript("global.equals"));
+        Assert.assertEquals(123456, v8.executeScript("global.hashCode"));
+        Assert.assertEquals("hello world!", v8.executeStringScript("global.toString"));
+
+        // TODO: not needed / useful ?!?!
+        // v8.executeScript("delete global.JObject");
+        // v8.executeScript("global.JObject = undefined");
+
+        // v8.executeScript("delete global.obj");
+        // v8.executeScript("global.obj = undefined");
+
+        // v8.executeScript("delete global.JSON.prune");
+        // v8.executeScript("global.JSON.prune = undefined");
+
+        // v8.executeScript("global.J2V8.release();");
+
+        // v8.executeScript("delete global.J2V8");
+        // v8.executeScript("global.J2V8 = undefined");
 
         // String script = readFile("C:/code/J2V8-interop/src/test/resources/js/J2V8Interop/Test_J2V8Interop.js", StandardCharsets.UTF_8);
 
@@ -91,16 +147,56 @@ public class Test_J2V8Interop {
         
         //v8.executeVoidScript(Utils.getScriptSource(this.getClass().getClassLoader(), "./js/construction/TestJsClassConstructors.js"));
 
-        while (njs.isRunning()) {
-            njs.handleMessage();
-        }
-
         //v8.executeVoidScript(ScriptUtils.getScriptSource(this));
 
         // Assert.assertEquals(v8.executeStringScript("person.name"), "joe");
         // Assert.assertEquals(v8.executeStringScript("jackie.name"), "jackie");
         // Assert.assertEquals(v8.executeBooleanScript("jackie.isAwesome()"), true);
 
+        System.out.println("-----------> java_lang_Object_basicInterop");
 
+        try {
+            J2V8Interop.releaseInterop(njs);
+
+            // v8.executeObjectScript("global.J2V8").release();
+            // v8.executeObjectScript("global.J2V8Interop");
+            // v8.executeObjectScript("global._");
+            // v8.executeObjectScript("global.obj");
+            // v8.executeObjectScript("global.__javaGetTypeInfo");
+            // v8.executeObjectScript("global.__javaCreateInstance");
+            // v8.executeObjectScript("global.__javaCallMethod");
+
+            String dbg = v8.executeStringScript("JSON.stringify(Object.keys(global))");
+            System.out.println("global: " + dbg);
+
+
+            // V8Object glob = v8.getObject("global");
+            // glob.release();
+            // V8Object lodash = glob.getObject("_");
+            // lodash.release();
+
+            // V8Array arr = new V8Array(v8);
+            // Object[] hmx = hm.toArray();
+            // for (Object bj : hmx)
+            // {
+            //     V8Value o = (V8Value)bj;
+            //     if (o.isReleased())
+            //         continue;
+
+            //     V8Object vo = (V8Object)o;
+            //     arr.add("0", vo);
+            //     V8Object json = v8.getObject("global").getObject("JSON");
+            //     hm2.add(json.executeStringFunction("prune", arr));
+            // }
+            njs.release();
+        }
+        catch (Exception e) {
+            System.out.println("DBG: " + hm2.size());
+            // for (String o : hm2)
+            // {
+            //     System.out.println("--------> Undisposed: " + o);
+            // }
+            throw e;
+        }
     }
 }

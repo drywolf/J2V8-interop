@@ -1,5 +1,5 @@
 
-///<reference path="C:/code/J2V8-interop/src/main/resources/J2V8Interop.d.ts" />
+///<reference path="../../../../../src/main/resources/J2V8Interop.d.ts" />
 
 const path = require('path');
 

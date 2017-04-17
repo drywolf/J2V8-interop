@@ -8,12 +8,19 @@
   <packaging>jar</packaging>
   
   <dependencies>
-    <dependency>
+    <!--<dependency>
         <groupId>local</groupId>
         <artifactId>J2V8</artifactId>
         <version>SNAPSHOT</version>
         <scope>system</scope>
         <systemPath>C:/code/Github-Fork/J2V8/target/j2v8_win32_x86_64-4.6.0.jar</systemPath>
+    </dependency>-->
+
+    <!-- https://mvnrepository.com/artifact/com.eclipsesource.j2v8/j2v8_win32_x86_64 -->
+    <dependency>
+        <groupId>com.eclipsesource.j2v8</groupId>
+        <artifactId>j2v8_win32_x86_64</artifactId>
+        <version>4.6.0</version>
     </dependency>
 
     <!-- https://mvnrepository.com/artifact/org.javassist/javassist -->
@@ -43,6 +50,15 @@
       <version>4.8.2</version>
       <scope>test</scope>
     </dependency>
+
+    <!-- for single thread testing -->
+    <!-- https://mvnrepository.com/artifact/net.jcip/jcip-annotations -->
+    <dependency>
+        <groupId>net.jcip</groupId>
+        <artifactId>jcip-annotations</artifactId>
+        <version>1.0</version>
+    </dependency>
+
   </dependencies>
 
     <build>
@@ -63,6 +79,8 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.14</version>
                 <configuration>
+                    <forkCount>1</forkCount>
+                    <reuseForks>false</reuseForks>
                     <systemPropertyVariables>
                         <java.util.logging.config.file>
                             src/test/resources/logging.properties

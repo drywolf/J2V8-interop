@@ -16,5 +16,6 @@
         ".project": true,
         ".settings": true,
         "target": true
-    }
+    },
+    "java.configuration.updateBuildConfiguration": "automatic"
 }
