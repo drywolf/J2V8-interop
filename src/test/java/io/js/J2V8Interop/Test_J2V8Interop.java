@@ -62,6 +62,42 @@ public class Test_J2V8Interop implements ReferenceHandler {
         }
     }
 
+    @Test
+    public void releaseNonExsitingRuntime()
+    {
+        injectEx.expect(RuntimeException.class);
+        injectEx.expectMessage("Interop runtime was not found");
+
+        NodeJS njs = NodeJS.createNodeJS();
+
+        try {
+            J2V8Interop.releaseInterop(njs);
+        }
+        finally {
+            System.out.println("-----------> releaseNonExsitingRuntime");
+            njs.release();
+        }
+    }
+
+    @Test
+    public void releaseRuntimeTwice()
+    {
+        injectEx.expect(RuntimeException.class);
+        injectEx.expectMessage("Interop runtime was not found");
+
+        NodeJS njs = NodeJS.createNodeJS();
+
+        try {
+            J2V8Interop.injectInteropRuntime(njs);
+            J2V8Interop.releaseInterop(njs);
+            J2V8Interop.releaseInterop(njs);
+        }
+        finally {
+            System.out.println("-----------> releaseRuntimeTwice");
+            njs.release();
+        }
+    }
+
     static String readFile(String path, Charset encoding)
     {
         try {
