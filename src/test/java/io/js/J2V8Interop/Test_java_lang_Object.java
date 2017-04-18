@@ -4,9 +4,10 @@ import com.eclipsesource.v8.*;
 import java.io.*;
 import java.nio.charset.*;
 import java.nio.file.*;
+import java.util.*;
+import java.text.*;
 
 import org.apache.commons.io.Charsets;
-
 
 import org.junit.*;
 import org.junit.rules.*;
@@ -25,6 +26,13 @@ public class Test_java_lang_Object {
         {
             return null;
         }
+    }
+
+    private void printDate(String prefix)
+    {
+        DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss.SSS");
+        Date date = new Date();
+        System.out.println(prefix + dateFormat.format(date));
     }
 
     @Test
@@ -46,7 +54,9 @@ public class Test_java_lang_Object {
 
         try {
             String script = readFile("./src/test/resources/js/J2V8Interop/Test_java_lang_Object.js");
+            printDate("START at ");
             v8.executeVoidScript(script);
+            printDate("FIN at ");
         }
         catch (V8ScriptExecutionException e)
         {

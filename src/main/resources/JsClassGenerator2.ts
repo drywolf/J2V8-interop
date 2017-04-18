@@ -86,7 +86,13 @@ function $__JsMethod__$($__MethodArgs__$: any)
     }
 
     // TODO: proper marshalling of JS values to Java values
-    let boxedArgs = _.map(arguments, arg => { return { __ptr: arg.__ptr } });
+    let boxedArgs = _.map(arguments, arg =>
+    {
+        if (arg.__ptr)
+            return { __ptr: arg.__ptr };
+
+        return { __val: arg };
+    });
     // print("jsBoxedArgs: " + JSON.stringify(marshalledArgs));
 
     let returnBox = __javaCallMethod(this.__ptr, $__MethodHash__$, boxedArgs);

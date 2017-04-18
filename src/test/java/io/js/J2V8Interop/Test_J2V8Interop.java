@@ -38,7 +38,6 @@ public class Test_J2V8Interop implements ReferenceHandler {
             J2V8Interop.injectInteropRuntime(njs);
         }
         finally {
-            System.out.println("-----------> injectRuntime");
             J2V8Interop.releaseInterop(njs);
             njs.release();
         }
@@ -56,7 +55,6 @@ public class Test_J2V8Interop implements ReferenceHandler {
             J2V8Interop.injectInteropRuntime(njs);
         }
         finally {
-            System.out.println("-----------> injectRuntimeTwice");
             J2V8Interop.releaseInterop(njs);
             njs.release();
         }
@@ -74,7 +72,6 @@ public class Test_J2V8Interop implements ReferenceHandler {
             J2V8Interop.releaseInterop(njs);
         }
         finally {
-            System.out.println("-----------> releaseNonExsitingRuntime");
             njs.release();
         }
     }
@@ -93,7 +90,6 @@ public class Test_J2V8Interop implements ReferenceHandler {
             J2V8Interop.releaseInterop(njs);
         }
         finally {
-            System.out.println("-----------> releaseRuntimeTwice");
             njs.release();
         }
     }
@@ -137,7 +133,6 @@ public class Test_J2V8Interop implements ReferenceHandler {
             public void receiveResult(Object result) {
                 System.out.println("Node.js Result: " + result);
 
-                // System.out.println("-----------> java_lang_Object_basicInterop");
                 // J2V8Interop.releaseInterop(njs);
                 // njs.release();
                 System.out.println("EXEC OK");
@@ -196,8 +191,6 @@ public class Test_J2V8Interop implements ReferenceHandler {
         // Assert.assertEquals(v8.executeStringScript("person.name"), "joe");
         // Assert.assertEquals(v8.executeStringScript("jackie.name"), "jackie");
         // Assert.assertEquals(v8.executeBooleanScript("jackie.isAwesome()"), true);
-
-        System.out.println("-----------> java_lang_Object_basicInterop");
 
         try {
             J2V8Interop.releaseInterop(njs);

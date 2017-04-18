@@ -39,11 +39,18 @@ public class JavaObjectHeap
         return entry;
     }
 
-    public Object getJObjfromJSBox(V8Object ptrBox)
+    // TODO: does this cover all cases ?
+    public Object getJObjfromJSBox(V8Object jsBox)
     {
-        int javaPtr = ptrBox.getInteger("__ptr");
-        JavaHeapEntry javaArg = heapEntries.get(javaPtr);
-        return javaArg.javaObject;
+        if (jsBox.contains("__ptr"))
+        {
+            int javaPtr = jsBox.getInteger("__ptr");
+            JavaHeapEntry javaArg = heapEntries.get(javaPtr);
+            return javaArg.javaObject;
+        }
+
+        // TODO: is this all that is needed to unbox primitive values ?
+        return jsBox.get("__val");
     }
 
     public Object getJObjfromPtr(int javaPtr)

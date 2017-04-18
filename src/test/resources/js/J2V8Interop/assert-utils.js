@@ -1,5 +1,11 @@
 function assert(condition, message)
 {
+    if (typeof condition !== 'boolean')
+        throw new Error("invalid type for assert condition");
+
+    if (typeof message !== 'string')
+        throw new Error("invalid type for assert message");
+
     if (!condition)
         throw new Error(`Assert failed: ${message}`);
 }

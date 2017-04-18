@@ -38,16 +38,22 @@ assert(aClass === bClass, "aClass === bClass");
 // a) run Java unit-tests in java and store assert-output, then compare it with JS assert-output
 // b) port / transpile java unit-test code directly to the API
 // see Open JDK: http://hg.openjdk.java.net/jdk8/jdk8/jdk/file/687fd7c7986d/test/java
-assertEqual(aClass.getEnclosingMethod(), null);
-assertEqual(bClass.getEnclosingMethod(), null);
+assertEqual(null, aClass.getEnclosingMethod());
+assertEqual(null, bClass.getEnclosingMethod());
 
-assertEqual(aClass.getSuperclass(), null);
-assertEqual(bClass.getSuperclass(), null);
+assertEqual(null, aClass.getSuperclass());
+assertEqual(null, bClass.getSuperclass());
 
-assert(aClass.isAssignableFrom(bClass), true);
-assert(bClass.isAssignableFrom(aClass), true);
+assert(aClass.isAssignableFrom(bClass), "aClass.isAssignableFrom(bClass)");
+assert(bClass.isAssignableFrom(aClass), "bClass.isAssignableFrom(aClass)");
 
 assert(aClass.equals(bClass), "aClass.equals(bClass)");
+
+assertEqual(false, a.equals(aClass));
+assertEqual(false, b.equals(bClass));
+
+assertEqual(false, b.equals(1));
+assertEqual(false, b.equals(true));
 
 let c = a;
 assert(a.equals(c), "a.equals(c)");
