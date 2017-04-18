@@ -55,11 +55,11 @@ public class Test_JsClassGenerator {
         String boot_script = ScriptUtils.getScriptSource(cl, "J2V8Interop.js");
         v8.executeVoidScript(boot_script);
 
-        String assert_script = readFile("C:/code/J2V8-interop/src/test/resources/js/J2V8Interop/assert-utils.js");
+        String assert_script = readFile("./src/test/resources/js/J2V8Interop/assert-utils.js");
         v8.executeVoidScript(assert_script);
 
         try {
-            String script = readFile("C:/code/J2V8-interop/src/test/resources/js/J2V8Interop/Test_JsClassGenerator.js");
+            String script = readFile("./src/test/resources/js/J2V8Interop/Test_JsClassGenerator.js");
             v8.executeVoidScript(script);
         }
         catch (V8ScriptExecutionException e)
@@ -81,7 +81,7 @@ public class Test_JsClassGenerator {
         //njs.release();
         v8.release();
 
-        // File script = new File("C:/code/J2V8-interop/src/test/resources/js/J2V8Interop/Test_JsClassGenerator.js");
+        // File script = new File("./src/test/resources/js/J2V8Interop/Test_JsClassGenerator.js");
         // njs.exec(script, new NodeJsExecCallback() {
         //     public void receiveResult(Object result) {
 

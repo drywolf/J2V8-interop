@@ -14,8 +14,7 @@ global.JSON.prune = require('json-prune');
 
 global.JObject = JObject;
 
-// global.obj = new JObject();
-global.obj = new J2V8();
+global.obj = new JObject();
 
 // https://docs.oracle.com/javase/7/docs/api/java/lang/Object.html#equals(java.lang.Object)
 global.equals = obj.equals(obj);

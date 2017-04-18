@@ -41,11 +41,11 @@ public class Test_java_lang_Object {
             }
         }, "print");
 
-        String assert_script = readFile("C:/code/J2V8-interop/src/test/resources/js/J2V8Interop/assert-utils.js");
+        String assert_script = readFile("./src/test/resources/js/J2V8Interop/assert-utils.js");
         v8.executeVoidScript(assert_script);
 
         try {
-            String script = readFile("C:/code/J2V8-interop/src/test/resources/js/J2V8Interop/Test_java_lang_Object.js");
+            String script = readFile("./src/test/resources/js/J2V8Interop/Test_java_lang_Object.js");
             v8.executeVoidScript(script);
         }
         catch (V8ScriptExecutionException e)

@@ -7,6 +7,8 @@ export interface JavaTypeInfo
     hash: number;
     hashstr: number;
 
+    extends: string;
+
     constructors: { [name: string]: JavaMethodInfo; };
     methods: { [name: string]: JavaMethodInfo; };
 }

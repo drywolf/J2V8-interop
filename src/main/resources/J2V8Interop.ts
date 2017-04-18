@@ -5,42 +5,27 @@ import {JsClassGenerator2} from './JsClassGenerator2';
 export {JsClassGenerator} from './JsClassGenerator';
 export {JsClassGenerator2} from './JsClassGenerator2';
 
+export declare type JsConstrutible = {new(...args: any[]): any} | null;
+
 export class J2V8
 {
-    // TODO: define separate constructible type and reuse it where needed
-    public static import(classname: string): {new(...args: any[]): any} | null
+    static classes: {[classname: string]: JsConstrutible} = {};
+
+    public static import(classname: string): JsConstrutible
     {
-        // console.log(classname);
-        // return null;
-        // TODO: generate Java class proxies
-        // __javaGetClassInfo(classname);
-        // return J2V8;
+        let jsClass = J2V8.classes[classname];
+
+        if (jsClass)
+            return jsClass;
 
         let typeInfo = JavaTypeRegistry.instance.resolveType(classname);
 
         if (typeInfo === null)
             return null;
 
-        let jsClass = JsClassGenerator2.createClass(typeInfo)
+        jsClass = JsClassGenerator2.createClass(typeInfo);
+        J2V8.classes[classname] = jsClass;
         return jsClass;
-    }
-
-    // TODO: just for testing temporarily
-    public equals(other: Object): boolean
-    {
-        return this == other;
-    }
-
-    // TODO: just for testing temporarily
-    public hashCode(): number
-    {
-        return 123456|0;
-    }
-
-    // TODO: just for testing temporarily
-    public toString(): string
-    {
-        return "hello world!";
     }
 }
 

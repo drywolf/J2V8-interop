@@ -1,3 +1,6 @@
+// TODO: set up proper .d.ts generation for TS code
+// then add extra annotations for the Java types used here
+///<reference path="./Test_java_lang_Object.d.ts" />
 
 const JObject = global.J2V8Interop.J2V8.import("java.lang.Object");
 
@@ -34,6 +37,7 @@ assert(aClass === bClass, "aClass === bClass");
 // TODO: think about a way to use Java unit test code to test this API instead
 // a) run Java unit-tests in java and store assert-output, then compare it with JS assert-output
 // b) port / transpile java unit-test code directly to the API
+// see Open JDK: http://hg.openjdk.java.net/jdk8/jdk8/jdk/file/687fd7c7986d/test/java
 assertEqual(aClass.getEnclosingMethod(), null);
 assertEqual(bClass.getEnclosingMethod(), null);
 
@@ -42,6 +46,11 @@ assertEqual(bClass.getSuperclass(), null);
 
 assert(aClass.isAssignableFrom(bClass), true);
 assert(bClass.isAssignableFrom(aClass), true);
+
+assert(aClass.equals(bClass), "aClass.equals(bClass)");
+
+let c = a;
+assert(a.equals(c), "a.equals(c)");
 
 // TODO: assert JObject class / instances
 // TODO: assert a/b methods/fields/etc. (use lodash & JS type checks)

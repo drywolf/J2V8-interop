@@ -48,6 +48,18 @@ public class JavaTypeInfoGenerator {
         typeInfo.add("hash", classHash);
         typeInfo.add("hashstr", classHashStr);
 
+        Class<?> superClass = classType.getSuperclass();
+
+        if (superClass == null)
+            typeInfo.addNull("extends");
+        else
+        {
+            String superName = superClass.getName();
+            // V8Object jsSuper = getJavaTypeInfo(runtime, superClass);
+            // typeInfo.add("extends", jsSuper);
+            typeInfo.add("extends", superName);
+        }
+
         V8Object jsCtors = new V8Object(runtime);
         runtime.registerResource(jsCtors);
         typeInfo.add("constructors", jsCtors);

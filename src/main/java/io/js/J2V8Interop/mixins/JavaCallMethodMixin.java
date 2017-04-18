@@ -36,7 +36,9 @@ public class JavaCallMethodMixin
                 Object thiz = javaHeap.getJObjfromPtr(__ptr);
                 Class<?> clazz = thiz.getClass();
 
-                Method m = Arrays.asList(clazz.getDeclaredMethods())
+                // TODO: think if this is the way to do it or is there a better way?
+                // TODO: if this is kept, then introduce a cache for methods indexed by their hash-codes
+                Method m = Arrays.asList(clazz.getMethods())
                     .stream()
                     .filter(x -> x.hashCode() == methodHash)
                     .findFirst()

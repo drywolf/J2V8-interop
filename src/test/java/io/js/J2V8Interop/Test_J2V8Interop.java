@@ -130,7 +130,7 @@ public class Test_J2V8Interop implements ReferenceHandler {
         }, "print");
 
         // TODO: remove absolute path strings from all files
-        File script = new File("C:/code/J2V8-interop/src/test/resources/js/J2V8Interop/Test_J2V8Interop.js");
+        File script = new File("./src/test/resources/js/J2V8Interop/Test_J2V8Interop.js");
 
         System.out.println("BEFORE exec");
         njs.exec(script, new NodeJsExecCallback() {
@@ -164,8 +164,8 @@ public class Test_J2V8Interop implements ReferenceHandler {
         //System.out.println("DEBUG " + debug);
 
         Assert.assertEquals(true, v8.executeBooleanScript("global.equals"));
-        Assert.assertEquals(123456, v8.executeScript("global.hashCode"));
-        Assert.assertEquals("hello world!", v8.executeStringScript("global.toString"));
+        Assert.assertTrue("hashCode is int", v8.executeScript("global.hashCode") instanceof Integer);
+        Assert.assertTrue("Object.toString()", ((String)v8.executeStringScript("global.toString")).startsWith("java.lang.Object@"));
 
         // TODO: not needed / useful ?!?!
         // v8.executeScript("delete global.JObject");
@@ -182,7 +182,7 @@ public class Test_J2V8Interop implements ReferenceHandler {
         // v8.executeScript("delete global.J2V8");
         // v8.executeScript("global.J2V8 = undefined");
 
-        // String script = readFile("C:/code/J2V8-interop/src/test/resources/js/J2V8Interop/Test_J2V8Interop.js", StandardCharsets.UTF_8);
+        // String script = readFile("./src/test/resources/js/J2V8Interop/Test_J2V8Interop.js", StandardCharsets.UTF_8);
 
         // V8 v8 = njs.getRuntime();
         // v8.executeVoidScript(script);

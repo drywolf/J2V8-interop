@@ -59,7 +59,7 @@ public class Test_JsClassGenerator2 {
         v8.executeVoidScript(boot_script);
 
         try {
-            String script = readFile("C:/code/J2V8-interop/src/test/resources/js/J2V8Interop/Test_JsClassGenerator2.js");
+            String script = readFile("./src/test/resources/js/J2V8Interop/Test_JsClassGenerator2.js");
             v8.executeVoidScript(script);
         }
         catch (V8ScriptExecutionException e)

@@ -30,6 +30,7 @@ public class JavaCreateInstanceMixin
                 Constructor<?> javaCtor;
 
                 try {
+                    System.out.println("creating Java instance of: " + __javaPackage + "." + __javaClassName);
                     javaClass = Class.forName(__javaPackage + "." + __javaClassName);
                     // TODO: parameter mapping
                     javaCtor = javaClass.getConstructor();

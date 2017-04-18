@@ -1,7 +1,6 @@
 import * as _ from 'lodash';
 
 import {JavaTypeInfo} from './JavaTypeRegistry';
-// import {J2V8} from './J2V8Interop';
 import {JsProxyHeap, JsHeapEntry} from './JsProxyHeap';
 
 declare function print(message: string): void;
@@ -19,9 +18,7 @@ class JavaInstanceProvider
 {
     public static initJavaInstance(target_class: JavaClassProxy, instance: any)
     {
-        // TODO: call Java factory then set __ptr on instance
-        print("new java instance for instance " + instance + " with class " + target_class.__javaClassName);
-
+        // call Java factory which will also set __ptr on instance
        let heapEntry = __javaCreateInstance(target_class, instance);
        JsProxyHeap.instance.putEntry(heapEntry);
     }
@@ -35,6 +32,8 @@ class $__JsProxySuperClassName__$ { constructor(...args: any[]) { args; } }
 
 class $__JsProxyClassName__$ extends $__JsProxySuperClassName__$
 {
+    __ptr?: number;
+
     $__JavaClassMetaData__$(){}
 
     $__JavaInstanceMetaData__$(){}
@@ -50,9 +49,10 @@ class $__JsProxyClassName__$ extends $__JsProxySuperClassName__$
         //print("------------> new.target " + (new.target as any).__javaClassHash);
 
         let arg0 = (arguments.length > 0 && arguments[0]) || undefined;
-        if (arg0 && arg0.__ptr)
+
+        if ((arg0 && arg0.__ptr) // a boxed Java ptr is passed, just create a class instance to wrap this given ptr
+            || new.target !== $__JsProxyClassName__$) // only the top-most class in the inheritance-chain should create a new Java instance
         {
-            //throw new Error("working until here")
         }
         else
         {
@@ -88,6 +88,7 @@ function $__JsMethod__$($__MethodArgs__$: any)
     // TODO: proper marshalling of JS values to Java values
     let boxedArgs = _.map(arguments, arg => { return { __ptr: arg.__ptr } });
     // print("jsBoxedArgs: " + JSON.stringify(marshalledArgs));
+
     let returnBox = __javaCallMethod(this.__ptr, $__MethodHash__$, boxedArgs);
 
     if (returnBox.__ptr)
@@ -125,8 +126,16 @@ export class JsClassGenerator2
         classCode = classCode.replace(/\$__JavaClassMetaData__\$\(\)\s*{\s*}/g, javaClassMetaData);
 
         // TODO: handle super type + use cache for generated Js->Java class proxies
-        classCode = classCode.replace(/extends \$__JsProxySuperClassName__\$/g, "");
-        classCode = classCode.replace(/super\(\$__CtorSuper__\$\);/g, "");
+        if (javaType.extends)
+            classCode = classCode.replace(/extends \$__JsProxySuperClassName__\$/g, `extends global.J2V8Interop.J2V8.import("${javaType.extends}")`);
+        else
+            classCode = classCode.replace(/extends \$__JsProxySuperClassName__\$/g, "");
+
+        if (javaType.extends)
+            classCode = classCode.replace(/super\(\$__CtorSuper__\$\);/g, "super();");
+        else
+            classCode = classCode.replace(/super\(\$__CtorSuper__\$\);/g, "");
+
         classCode = classCode.replace(/\$__CtorArgs__\$/g, "");
 
         let ctorCodes = "";
@@ -180,7 +189,7 @@ export class JsClassGenerator2
         // print("#methods: " + Object.keys(javaType.methods).length);
         // print("#constructors: " + Object.keys(javaType.constructors).length);
 
-        //print(classCode);
+        // print(classCode);
         // TODO: for debugging only
         //classCode = `class ${javaType.name} {}`;
         return eval(classCode);
