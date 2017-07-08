@@ -1,5 +1,5 @@
 
-import {J2V8} from './J2V8Interop';
+import {J2V8Impl as J2V8} from './J2V8Interop';
 
 export interface JsHeapEntry
 {
@@ -7,7 +7,7 @@ export interface JsHeapEntry
     __val: any;
 }
 
-declare type HeapEntries = {[key: number]: JsHeapEntry | null};
+export declare type HeapEntries = {[key: number]: JsHeapEntry | null};
 
 export class JsProxyHeap
 {

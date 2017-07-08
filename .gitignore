@@ -4,6 +4,7 @@
 .classpath
 .project
 .settings
+jdk-tests
 
 #--------------------------------------------------
 # github/gitignore/Java.gitignore

@@ -11,11 +11,14 @@
         "noImplicitThis": false,
         "noUnusedLocals": true,
         "noUnusedParameters": true,
+        "outDir": "./resources/js/J2V8Interop/",
         "strictNullChecks": false,
         "stripInternal": true,
         "target": "es2017"
     },
-    "files": [
-        "./src/main/java/io/js/J2V8Interop/scripts/J2V8Interop.ts"
+    "include": [
+        "./java/io/js/J2V8Interop/assert-utils.ts",
+        "./java/io/js/J2V8Interop/*.ts",
+        "../../typings/J2V8Interop.d.ts"
     ]
 }

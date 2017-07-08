@@ -1,4 +1,4 @@
-function assert(condition, message)
+function assert(condition: boolean, message: string)
 {
     if (typeof condition !== 'boolean')
         throw new Error("invalid type for assert condition");
@@ -10,16 +10,22 @@ function assert(condition, message)
         throw new Error(`Assert failed: ${message}`);
 }
 
-function assertEqual(expected, got)
+function assertEqual(expected: any, got: any)
 {
     if (typeof expected !== typeof got || expected !== got)
         throw new Error(`Assert failed: Expected: ${expected}\r\nGot: ${got}`);
 }
 
-function assertPropEqual(a, b, test_name)
+// patch typescript definition of "Object"
+interface Object {
+    getOwnPropertyDescriptors(obj: Object): Object;
+}
+
+function assertPropEqual(a: Object | Function, b: Object | Function, test_name: string)
 {
-    let ap = JSON.stringify(Object.getOwnPropertyDescriptors(a), null, 2);
-    let bp = JSON.stringify(Object.getOwnPropertyDescriptors(b), null, 2);
+    let ap = JSON.stringify(Object.getOwnPropertyDescriptors(a as Object), null, 2);
+    let bp = JSON.stringify(Object.getOwnPropertyDescriptors(b as Object), null, 2);
+    test_name;
     // print("--------------------------------------------------")
     // print("test: " + test_name);
     // print("--------------------------------------------------")
@@ -31,10 +37,11 @@ function assertPropEqual(a, b, test_name)
     assertEqual(ap, bp);
 }
 
-function assertObjectEqual(a, b, test_name)
+function assertObjectEqual(a: Object, b: Object, test_name: string)
 {
     let ao = JSON.stringify(a, null, 2);
     let bo = JSON.stringify(b, null, 2);
+    test_name;
     // print("--------------------------------------------------")
     // print("test: " + test_name);
     // print("--------------------------------------------------")
@@ -43,7 +50,7 @@ function assertObjectEqual(a, b, test_name)
     assertEqual(ao, bo);
 }
 
-function assertClassEqual(a, b)
+function assertClassEqual(a: any, b: any)
 {
     assertEqual(a.name, b.name);
     assertPropEqual(a, b, "$");

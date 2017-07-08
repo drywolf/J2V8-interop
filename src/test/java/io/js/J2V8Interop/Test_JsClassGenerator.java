@@ -15,23 +15,13 @@ import net.jcip.annotations.NotThreadSafe;
 @NotThreadSafe
 public class Test_JsClassGenerator {
 
-    static String readFile(String path)
-    {
-        try {
-            byte[] encoded = Files.readAllBytes(Paths.get(path));
-            return new String(encoded, Charsets.UTF_8);
-        }
-        catch (IOException e)
-        {
-            return null;
-        }
-    }
-
     @Test
     public void basic_ClassGen() {
         // NodeJS njs = NodeJS.createNodeJS();
         V8 v8 = V8.createV8Runtime();
         //V8 v8 = njs.getRuntime();
+
+        J2V8Interop.injectInteropRuntime(v8);
 
         // v8.registerJavaMethod(new JavaVoidCallback()
         // {
@@ -50,28 +40,17 @@ public class Test_JsClassGenerator {
             }
         }, "print");
 
-        ClassLoader cl = J2V8Interop.class.getClassLoader();
+        // ClassLoader cl = J2V8Interop.class.getClassLoader();
 
-        String boot_script = ScriptUtils.getScriptSource(cl, "J2V8Interop.js");
-        v8.executeVoidScript(boot_script);
+        // String boot_script = ScriptUtils.getScriptSource(cl, "J2V8Interop.js");
+        // v8.executeVoidScript(boot_script);
 
-        String assert_script = readFile("./src/test/resources/js/J2V8Interop/assert-utils.js");
-        v8.executeVoidScript(assert_script);
-
-        try {
-            String script = readFile("./src/test/resources/js/J2V8Interop/Test_JsClassGenerator.js");
-            v8.executeVoidScript(script);
-        }
-        catch (V8ScriptExecutionException e)
-        {
-            String st = e.getJSStackTrace();
-            System.out.println(st);
-            Assert.fail(e.getJSMessage());
-        }
+        TestUtils.runTestScript(v8, "./src/test/resources/js/J2V8Interop/assert-utils.js");
+        TestUtils.runTestScript(v8, "./src/test/resources/js/J2V8Interop/Test_JsClassGenerator.js");
 
         // System.out.println("class A desc: " + v8.executeStringScript("JSON.stringify(Object.getOwnPropertyDescriptors(global.A))"));
         // System.out.println("class B desc: " + v8.executeStringScript("JSON.stringify(Object.getOwnPropertyDescriptors(global.B))"));
-        
+
         // System.out.println("class A: " + v8.executeObjectScript("global.A"));
         // System.out.println("class B: " + v8.executeObjectScript("global.B"));
 
@@ -79,6 +58,7 @@ public class Test_JsClassGenerator {
         // System.out.println("class B constr: " + v8.executeStringScript("JSON.stringify(Object.getOwnPropertyDescriptors(global.B.constructor))"));
 
         //njs.release();
+        J2V8Interop.releaseInterop(v8);
         v8.release();
 
         // File script = new File("./src/test/resources/js/J2V8Interop/Test_JsClassGenerator.js");

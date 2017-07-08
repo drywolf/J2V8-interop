@@ -16,18 +16,6 @@ import net.jcip.annotations.NotThreadSafe;
 @NotThreadSafe
 public class Test_java_lang_Object {
 
-    static String readFile(String path)
-    {
-        try {
-            byte[] encoded = Files.readAllBytes(Paths.get(path));
-            return new String(encoded, Charsets.UTF_8);
-        }
-        catch (IOException e)
-        {
-            return null;
-        }
-    }
-
     private void printDate(String prefix)
     {
         DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss.SSS");
@@ -49,27 +37,10 @@ public class Test_java_lang_Object {
             }
         }, "print");
 
-        String assert_script = readFile("./src/test/resources/js/J2V8Interop/assert-utils.js");
-        v8.executeVoidScript(assert_script);
+        TestUtils.runTestScript(v8, "./src/test/resources/js/J2V8Interop/assert-utils.js");
+        TestUtils.runTestScript(v8, "./src/test/resources/js/J2V8Interop/Test_java_lang_Object.js");
 
-        try {
-            String script = readFile("./src/test/resources/js/J2V8Interop/Test_java_lang_Object.js");
-            printDate("START at ");
-            v8.executeVoidScript(script);
-            printDate("FIN at ");
-        }
-        catch (V8ScriptExecutionException e)
-        {
-            e.printStackTrace();
-            String st = e.getJSStackTrace();
-            System.out.println(st);
-            //Assert.fail(e.getJSMessage());
-            throw new RuntimeException(e.getJSMessage(), e);
-        }
-        finally
-        {
-            J2V8Interop.releaseInterop(v8);
-            v8.release();
-        }
+        J2V8Interop.releaseInterop(v8);
+        v8.release();
     }
 }

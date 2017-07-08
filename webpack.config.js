@@ -3,7 +3,7 @@ var path = require('path');
 module.exports =
 {
     target: 'node',
-    context: path.join(__dirname, './src/main/resources'),
+    context: path.join(__dirname, './src/main/java/io/js/J2V8Interop/scripts'),
     entry: {
         J2V8Interop: './J2V8Interop.ts'
     },

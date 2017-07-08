@@ -4,12 +4,12 @@
         "**/.svn": true,
         "**/.hg": true,
         "**/.DS_Store": true,
-        "**/*.js": {
-            "when": "$(basename).ts"
-        },
-        "**/*.d.ts": {
-            "when": "$(basename).ts"
-        },
+        // "**/*.js": {
+        //     "when": "$(basename).ts"
+        // },
+        // "**/*.d.ts": {
+        //     "when": "$(basename).ts"
+        // },
         // .gitignore
         "node_modules": true,
         ".classpath": true,
@@ -17,5 +17,8 @@
         ".settings": true,
         "target": true
     },
-    "java.configuration.updateBuildConfiguration": "automatic"
+    "java.configuration.updateBuildConfiguration": "automatic",
+    "editor.trimAutoWhitespace": true,
+    "files.trimTrailingWhitespace": true,
+    "editor.insertSpaces": true
 }

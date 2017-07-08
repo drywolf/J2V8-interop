@@ -7,25 +7,12 @@ import java.nio.file.*;
 
 import org.apache.commons.io.Charsets;
 
-
 import org.junit.*;
 import org.junit.rules.*;
 import net.jcip.annotations.NotThreadSafe;
 
 @NotThreadSafe
 public class Test_JsClassGenerator2 {
-
-    static String readFile(String path)
-    {
-        try {
-            byte[] encoded = Files.readAllBytes(Paths.get(path));
-            return new String(encoded, Charsets.UTF_8);
-        }
-        catch (IOException e)
-        {
-            return null;
-        }
-    }
 
     @Test
     public void basic_ClassGen() {
@@ -53,23 +40,12 @@ public class Test_JsClassGenerator2 {
             }
         }, "print");
 
-        ClassLoader cl = J2V8Interop.class.getClassLoader();
+        // ClassLoader cl = J2V8Interop.class.getClassLoader();
 
-        String boot_script = ScriptUtils.getScriptSource(cl, "J2V8Interop.js");
-        v8.executeVoidScript(boot_script);
+        // String boot_script = ScriptUtils.getScriptSource(cl, "J2V8Interop.js");
+        // v8.executeVoidScript(boot_script);
 
-        try {
-            String script = readFile("./src/test/resources/js/J2V8Interop/Test_JsClassGenerator2.js");
-            v8.executeVoidScript(script);
-        }
-        catch (V8ScriptExecutionException e)
-        {
-            e.printStackTrace();
-            String st = e.getJSStackTrace();
-            System.out.println(st);
-            //Assert.fail(e.getJSMessage());
-            throw new RuntimeException(e.getJSMessage(), e);
-        }
+        TestUtils.runTestScript(v8, "./src/test/resources/js/J2V8Interop/Test_JsClassGenerator2.js");
 
         J2V8Interop.releaseInterop(v8);
         v8.release();

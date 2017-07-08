@@ -94,18 +94,6 @@ public class Test_J2V8Interop implements ReferenceHandler {
         }
     }
 
-    static String readFile(String path, Charset encoding)
-    {
-        try {
-            byte[] encoded = Files.readAllBytes(Paths.get(path));
-            return new String(encoded, encoding);
-        }
-        catch (IOException e)
-        {
-            return null;
-        }
-    }
-
     boolean cont = false;
 
     @Test // NOTE: temporarily disabled
@@ -183,7 +171,7 @@ public class Test_J2V8Interop implements ReferenceHandler {
         // v8.executeVoidScript(script);
 
         // v8.execute("StaticAnimals.SomeFuncVarargs([myBear, myBear2])");
-        
+
         //v8.executeVoidScript(Utils.getScriptSource(this.getClass().getClassLoader(), "./js/construction/TestJsClassConstructors.js"));
 
         //v8.executeVoidScript(ScriptUtils.getScriptSource(this));

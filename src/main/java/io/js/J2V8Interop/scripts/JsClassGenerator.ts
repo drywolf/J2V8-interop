@@ -14,7 +14,7 @@
 
 // function applyConstruct(ctor, params) {
 //     var obj, newobj;
-    
+
 //     function fakeCtor() {
 //     }
 //     fakeCtor.prototype = ctor.prototype;
@@ -29,7 +29,7 @@
 
 export class JsClassGenerator extends Object
 {
-    public static createBlankClass(name: string, xtends: FunctionConstructor, ctor?: Function, configure?: Function): Function
+    public static createBlankClass(name: string, xtends: ObjectConstructor, ctor?: Function, configure?: Function): any
     {
         let clazz = class /*extends xtends*/
         {
@@ -48,7 +48,7 @@ export class JsClassGenerator extends Object
                     // ctor.apply(this, arguments);
                 // applyConstruct(ctor, arguments);
             }
-            
+
             // constructor()
             // {
             //     // TODO: generate type checking code for constructor arguments
@@ -88,7 +88,7 @@ export class JsClassGenerator extends Object
             //     writable: false,
             // },
         };
-        
+
         // delete clazz.length;
         props.length =
         {

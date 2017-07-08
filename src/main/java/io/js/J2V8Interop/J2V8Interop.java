@@ -18,7 +18,7 @@ public class J2V8Interop {
     }
 
     public static InteropRuntime injectInteropRuntime(V8 runtime) {
-        
+
         Object resultObj = runtime.executeScript("typeof __runtimeHash === 'undefined' ? null : __runtimeHash");
 
         final String alreadyInjectedMsg = "Interop runtime already injected";
@@ -48,6 +48,10 @@ public class J2V8Interop {
         JavaGetTypeInfoMixin.inject(rt);
         JavaCreateInstanceMixin.inject(rt);
         JavaCallMethodMixin.inject(rt);
+
+        V8Object j2v8 = runtime.executeObjectScript("global.J2V8");
+        runtime.add("J2V8", j2v8);
+        j2v8.release();
 
         return rt;
     }
@@ -83,6 +87,7 @@ public class J2V8Interop {
         if (rt == null)
             throw new RuntimeException(notFoundMsg);
 
+        runtime.addUndefined("J2V8");
         runtime.executeVoidScript("delete __runtimeHash");
 
         JavaTypeInfoGenerator.release();

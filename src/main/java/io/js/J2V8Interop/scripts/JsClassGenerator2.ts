@@ -133,7 +133,7 @@ export class JsClassGenerator2
 
         // TODO: handle super type + use cache for generated Js->Java class proxies
         if (javaType.extends)
-            classCode = classCode.replace(/extends \$__JsProxySuperClassName__\$/g, `extends global.J2V8Interop.J2V8.import("${javaType.extends}")`);
+            classCode = classCode.replace(/extends \$__JsProxySuperClassName__\$/g, `extends J2V8.import("${javaType.extends}")`);
         else
             classCode = classCode.replace(/extends \$__JsProxySuperClassName__\$/g, "");
 
