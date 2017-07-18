@@ -29,13 +29,7 @@ public class Test_java_lang_Object {
         V8 v8 = V8.createV8Runtime();
         J2V8Interop.injectInteropRuntime(v8);
 
-        v8.registerJavaMethod(new JavaVoidCallback()
-        {
-            public void invoke(final V8Object receiver, final V8Array parameters) {
-                String msg = parameters.getString(0);
-                System.out.println(msg);
-            }
-        }, "print");
+        TestUtils.injectDebugUtils(v8);
 
         TestUtils.runTestScript(v8, "./src/test/resources/js/J2V8Interop/assert-utils.js");
         TestUtils.runTestScript(v8, "./src/test/resources/js/J2V8Interop/Test_java_lang_Object.js");

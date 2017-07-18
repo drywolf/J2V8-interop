@@ -4,11 +4,13 @@ import com.eclipsesource.v8.*;
 
 public class InteropBoxUtils
 {
+    static final String valKey = "__val";
+    static final String ptrKey = "__ptr";
+    static final String clsKey = "__cls";
+    static final String typehashKey = "__typehash";
+
     // TODO: implement a more generic / maintainable version of this code
     public static V8Object boxJavaObject(JavaObjectHeap heap, V8 v8, Object o) {
-        final String valKey = "__val";
-        final String ptrKey = "__ptr";
-        final String clsKey = "__cls";
 
         //V8Object res = new V8Object(v8);
         if (o == null)
@@ -16,15 +18,24 @@ public class InteropBoxUtils
 
         Class<?> clz = o.getClass();
         if (clz == Boolean.class)
-            return new V8Object(v8).add(valKey, (boolean) o);
+            return new V8Object(v8)
+                .add(valKey, (boolean) o)
+                .add(typehashKey, System.identityHashCode(Boolean.class));
         else if (clz == Double.class)
-            return new V8Object(v8).add(valKey, (double) o);
+            return new V8Object(v8)
+                .add(valKey, (double) o)
+                .add(typehashKey, System.identityHashCode(Double.class));
         else if (clz == Integer.class)
-            return new V8Object(v8).add(valKey, (int) o);
+            return new V8Object(v8)
+                .add(valKey, (int) o)
+                .add(typehashKey, System.identityHashCode(Integer.class));
         else if (clz == String.class)
-            return new V8Object(v8).add(valKey, (String) o);
+            return new V8Object(v8)
+                .add(valKey, (String) o)
+                .add(typehashKey, System.identityHashCode(String.class));
         else if (clz == CharSequence.class)
-            return new V8Object(v8).add(valKey, o.toString());
+            return new V8Object(v8)
+                .add(valKey, o.toString());
         else if (clz.isArray()) {
             // TODO: implement boxing arrays
             throw new RuntimeException("Boxing arrays not implemented");

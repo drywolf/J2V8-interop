@@ -1,3 +1,6 @@
+
+declare function printDebug(x: string): void;
+
 function assert(condition: boolean, message: string)
 {
     if (typeof condition !== 'boolean')
@@ -56,6 +59,6 @@ function assertClassEqual(a: any, b: any)
     assertPropEqual(a, b, "$");
     assertPropEqual(a.constructor, b.constructor, "$.constructor");
     assertPropEqual(a.prototype, b.prototype, "$.prototype");
-    // print(a.prototype.constructor.name + " , " + b.prototype.constructor.name);
+    printDebug(a.prototype.constructor.name + " , " + b.prototype.constructor.name);
     assertPropEqual(a.prototype.constructor, b.prototype.constructor, "$.prototype.constructor");
 }

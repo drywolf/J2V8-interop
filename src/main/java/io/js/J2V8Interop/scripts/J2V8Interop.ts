@@ -1,15 +1,17 @@
 
 import {JavaTypeRegistry} from './JavaTypeRegistry';
 import {JsClassGenerator} from './JsClassGenerator';
-import {JsClassGenerator2} from './JsClassGenerator2';
+import {JsClassGenerator2, JsConstrutible} from './JsClassGenerator2';
 
 export {JsClassGenerator} from './JsClassGenerator';
 export {JsClassGenerator2} from './JsClassGenerator2';
 
-export declare type JsConstrutible = {new(...args: any[]): any} | null;
-
 export class J2V8Impl
 {
+    static BOOLEAN_HASH: number;
+    static INTEGER_HASH: number;
+    static STRING_HASH: number;
+
     static classes: {[classname: string]: JsConstrutible} = {};
 
     public static JsClassGenerator = JsClassGenerator;

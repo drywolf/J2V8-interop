@@ -5,7 +5,7 @@ export interface JavaTypeInfo
     package: string;
     name: string;
     hash: number;
-    hashstr: number;
+    // hashstr: number;
 
     extends: string;
 
@@ -17,7 +17,7 @@ export interface JavaMethodInfo
 {
     name: string;
     hash: number;
-    hashstr: number;
+    // hashstr: number;
     args: JavaMethodArgInfo[];
 }
 

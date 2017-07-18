@@ -1,6 +1,4 @@
 
-declare function print(x: string): void;
-
 (function () {
     // const path = require('path');
 
@@ -8,15 +6,15 @@ declare function print(x: string): void;
 
     const g = global as any;
 
-    g.prune_options = {
-        replacer: function (value: any, defaultValue: any, circular: any) {
-            defaultValue;
-            if (value === undefined) return '"-undefined-"';
-            return '"-' + (circular ? '$' : '') + '(' + value.name + ')-"';
-        }
-    };
+    // g.prune_options = {
+    //     replacer: function (value: any, defaultValue: any, circular: any) {
+    //         defaultValue;
+    //         if (value === undefined) return '"-undefined-"';
+    //         return '"-' + (circular ? '$' : '') + '(' + value.name + ')-"';
+    //     }
+    // };
 
-    g.JSON.prune = require('json-prune');
+    // g.JSON.prune = require('json-prune');
 
     g.JObject = JObject;
 

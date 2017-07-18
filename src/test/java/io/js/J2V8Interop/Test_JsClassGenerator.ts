@@ -10,15 +10,15 @@
             this.x = x;
         }
     };
-    // print("SDFSDF " + A.constructor.prototype.toString());
-    // print("SDFSDF " + Function.prototype.toString());
+    // printDebug("SDFSDF " + A.constructor.prototype.toString());
+    // printDebug("SDFSDF " + Function.prototype.toString());
 
     let B = JsCG.createBlankClass("A", Object,
         function (x: any) {
             //Object.apply(this);
             //this.super();
             this.x = x[0];
-            print("THIS: " + JSON.stringify(this));
+            printDebug("THIS: " + JSON.stringify(this));
             //return this;
         },
         (clazz: any) => {
@@ -62,7 +62,7 @@
         }
 
         testMethod1() {
-            print("testMethod1");
+            printDebug("testMethod1");
         }
     };
 
@@ -71,13 +71,13 @@
             /// super(x)
             let thiz = Reflect.construct(B, [args[0]], Y);
 
-            print("THIS-in: " + JSON.stringify(thiz));
+            printDebug("THIS-in: " + JSON.stringify(thiz));
 
             //Reflect.apply(B, this, [1]);
             //B.call(Y, [x[0]]);
             // B.prototype.constructor.call(this, 1)
             //Object.setPrototypeOf(this, new.target.prototype);
-            print("THIS-out: " + JSON.stringify(thiz));
+            printDebug("THIS-out: " + JSON.stringify(thiz));
 
             //return this;
             return thiz;
@@ -109,19 +109,19 @@
 
             // let testMethod1 = () =>
             // {
-            //     print("testMethod1..." + this.x);
+            //     printDebug("testMethod1..." + this.x);
             // };
 
             // let testMethod1 = function()
             // {
-            //     print("testMethod1..." + this.x);
+            //     printDebug("testMethod1..." + this.x);
             // };
 
             // TODO: this might be the way to go
             // function testMethod1()
             // {
             //     "use strict";
-            //     print("testMethod1..." + this.x);
+            //     printDebug("testMethod1..." + this.x);
             // };
 
             // var createMethod = function(name, body)
@@ -142,13 +142,13 @@
 
             // let testMethod1 = createMethod("testMethod1", function()
             // {
-            //     print("testMethod1..." + this.x);
+            //     printDebug("testMethod1..." + this.x);
             // });
 
             let testMethod1 = (
                 class {
                     testMethod1() {
-                        print("testMethod1..." + (this as any).x);
+                        printDebug("testMethod1..." + (this as any).x);
                     }
                 }
             ).prototype.testMethod1;
@@ -156,7 +156,7 @@
             // let testMethod1 = () =>
             // {
             //     "use strict";
-            //     print("testMethod1..." + this.x);
+            //     printDebug("testMethod1..." + this.x);
             // };
 
             Object.defineProperties(clazz.prototype,
@@ -186,7 +186,7 @@
     let x = new X(1);
     let y = new Y(1);
 
-    print("----- instance tests -----");
+    printDebug("----- instance tests -----");
 
     assertPropEqual(x.testMethod1, y.testMethod1, "@.testMethod1");
 
@@ -195,11 +195,11 @@
     assertObjectEqual(b, x, "b = x");
     assertObjectEqual(a, y, "a = y");
 
-    print("B.len = " + B.length);
-    print("Y.len = " + Y.length);
+    printDebug("B.len = " + B.length);
+    printDebug("Y.len = " + Y.length);
 
-    print("B.constr.len = " + B.constructor.length);
-    print("Y.constr.len = " + Y.constructor.length);
+    printDebug("B.constr.len = " + B.constructor.length);
+    printDebug("Y.constr.len = " + Y.constructor.length);
 
     x.testMethod1();
     y.testMethod1();
@@ -210,22 +210,22 @@
         }
     }
 
-    print("------myclass---------")
+    printDebug("------myclass---------")
     let myc = new MyClass();
     myc.testMethod1();
 
-    // print(A.toString());
-    // print(B.toString());
-    // print(X.toString());
-    // print(Y.toString());
+    // printDebug(A.toString());
+    // printDebug(B.toString());
+    // printDebug(X.toString());
+    // printDebug(Y.toString());
 
-    // print("a = " + JSON.stringify(a));
-    // print("b = " + JSON.stringify(b));
+    // printDebug("a = " + JSON.stringify(a));
+    // printDebug("b = " + JSON.stringify(b));
 
     // assertPropEqual(a, b, "$obj a b");
 
-    // print("x = " + JSON.stringify(x.testMethod1));
-    // print("y = " + JSON.stringify(y.testMethod1));
+    // printDebug("x = " + JSON.stringify(x.testMethod1));
+    // printDebug("y = " + JSON.stringify(y.testMethod1));
 
     // assertPropEqual(x, y, "$obj x y");
 

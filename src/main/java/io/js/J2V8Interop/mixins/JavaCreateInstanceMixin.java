@@ -20,11 +20,11 @@ public class JavaCreateInstanceMixin
 
                 V8Object jsClass = f.getObject(parameters, 0);
                 V8Object jsInstance = f.getObject(parameters, 1);
-                
+
                 String __javaPackage = jsClass.getString("__javaPackage");
                 String __javaClassName = jsClass.getString("__javaClassName");
                 //int __javaClassHash = jsClass.getInteger("__javaClassHash");
-                
+
                 // Class<?> javaClass = JavaTypeInfoGenerator._types.get(__javaClassHash);
                 Class<?> javaClass;
                 Constructor<?> javaCtor;
@@ -38,6 +38,9 @@ public class JavaCreateInstanceMixin
 
                     JavaHeapEntry heapEntry = javaHeap.put(javaObj);
                     jsInstance.add("__ptr", heapEntry.javaPtr);
+
+                    System.out.println("created Java instance with ptr: " + heapEntry.javaPtr);
+
                     return heapEntry.jsPtr;
                 }
                 catch (Exception e)

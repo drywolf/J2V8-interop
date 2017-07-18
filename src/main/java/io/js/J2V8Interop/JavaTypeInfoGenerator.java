@@ -8,29 +8,54 @@ import java.util.stream.*;
 
 public class JavaTypeInfoGenerator {
 
+    // TODO: what was the thought for a separate _returnTypes set here, just debugging --> remove !?
     private static HashSet<V8Object> _returnTypes = new HashSet<>();
-    private static HashMap<Integer, V8Object> _types = new HashMap<>();
+    private static HashMap<Integer, V8Object> _js_types = new HashMap<>();
+    private static HashMap<Integer, Class<?>> _java_types = new HashMap<>();
 
     public static void release()
     {
-        for (V8Object typeInfo : _types.values()) {
+        for (V8Object typeInfo : _js_types.values()) {
             if (!typeInfo.isReleased())
                 typeInfo.release();
         }
     }
 
+    static
+    {
+        // TODO: this is a BIG band-aid here, need to figure out the right way to initialize the
+        // type hashmap to make sure the hashes are available once they are needed
+        _java_types.put(System.identityHashCode(Boolean.class), Boolean.class);
+    }
+
+    public static Class<?> getJavaClass(int classHash) {
+        Class<?> clazz = _java_types.get(classHash);
+
+        if (clazz == null)
+        {
+            // debug print known types
+            for (Class<?> x : _java_types.values())
+                System.out.println(x);
+
+            throw new RuntimeException("Tried to get unavailable java class by hashcode");
+        }
+
+        return clazz;
+    }
+
     public static V8Object getJavaTypeInfo(V8 runtime, Class<?> classType) {
 
-        int classHash = classType.hashCode();
-        String classHashStr = Long.toString(classHash & 0xFFFFFFFFL);
+        int classHash = System.identityHashCode(classType);
+        // String classHashStr = Long.toString(classHash & 0xFFFFFFFFL);
 
-        V8Object typeInfo = _types.get(classHash);
+        V8Object typeInfo = _js_types.get(classHash);
 
         if (typeInfo != null)
             return typeInfo;
 
         typeInfo = new V8Object(runtime);
-        _types.put(classHash, typeInfo);
+        _js_types.put(classHash, typeInfo);
+        _java_types.put(classHash, classType);
 
         //String packageName = classType.getPackage().getName();
         String packageName = "";
@@ -46,7 +71,8 @@ public class JavaTypeInfoGenerator {
         typeInfo.add("package", packageName);
         typeInfo.add("name", javaTypeName);
         typeInfo.add("hash", classHash);
-        typeInfo.add("hashstr", classHashStr);
+        typeInfo.add("__typehash", classHash); // TODO: consolidate usages of hash vs. __typehash vs. javaClassHash
+        // typeInfo.add("hashstr", classHashStr);
 
         Class<?> superClass = classType.getSuperclass();
 
@@ -112,14 +138,14 @@ public class JavaTypeInfoGenerator {
 
         // TODO: is this a feasible way to support overloads ??!
         String javaCtorName = "constructor";
-        int javaCtorHash = javaCtor.hashCode();
-        String javaCtorHashStr = Long.toString(javaCtorHash & 0xFFFFFFFFL);
+        int javaCtorHash = MethodHashing.calculateHash(javaCtor);
+        // String javaCtorHashStr = Integer.toString(javaCtorHash);
 
         V8Object jsCtor = new V8Object(runtime);
         runtime.registerResource(jsCtor);
         jsCtors.add(javaCtorName, jsCtor);
         jsCtor.add("hash", javaCtorHash);
-        jsCtor.add("hashstr", javaCtorHashStr);
+        // jsCtor.add("hashstr", javaCtorHashStr);
 
         V8Array jsCtorArgs = new V8Array(runtime);
         runtime.registerResource(jsCtorArgs);
@@ -137,15 +163,17 @@ public class JavaTypeInfoGenerator {
 
         // TODO: is this a feasible way to support overloads ??!
         String javaMethodName = javaMethod.getName();
-        int javaMethodHash = javaMethod.hashCode();
-        String javaMethodHashStr = Long.toString(javaMethodHash & 0xFFFFFFFFL);
+        // System.out.println("Get hash for " + javaMethod);
+        int javaMethodHash = MethodHashing.calculateHash(javaMethod);
+        // System.out.println("Done for " + javaMethod);
+        // String javaMethodHashStr = Integer.toString(javaMethodHash);
 
         V8Object jsMethod = new V8Object(runtime);
         runtime.registerResource(jsMethod);
         jsMethods.add(javaMethodName, jsMethod);
         jsMethod.add("name", javaMethodName);
         jsMethod.add("hash", javaMethodHash);
-        jsMethod.add("hashstr", javaMethodHashStr);
+        // jsMethod.add("hashstr", javaMethodHashStr);
 
         getJavaMethodReturnInfo(runtime, javaMethod, jsMethod);
 
@@ -181,7 +209,7 @@ public class JavaTypeInfoGenerator {
 
         Class<?> javaArgType = javaArg.getType();
         //String argTypeName = javaArgType.getName();
-        
+
         // TODO: make sure this type is also available in the JS-side type registry immediately
         V8Object jsArgType = getJavaTypeInfo(runtime, javaArgType);
         jsArg.add("type", jsArgType);

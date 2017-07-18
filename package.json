@@ -6,7 +6,8 @@
   "author": "DryWolf",
   "license": "MIT",
   "scripts": {
-    "build": "webpack --config webpack.config.js && build-types.bat",
+    "build": "npm run build-lib && npm run build-tests",
+    "build-lib": "webpack --config webpack.config.js && build-types.bat",
     "build-tests": "tsc --pretty -p ./src/test/tsconfig.json"
   },
   "dependencies": {

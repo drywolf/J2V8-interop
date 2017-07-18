@@ -3,8 +3,9 @@ import {J2V8Impl as J2V8} from './J2V8Interop';
 
 export interface JsHeapEntry
 {
-    __ptr: number;
-    __val: any;
+    __ptr?: number;
+    __typehash: number;
+    __val?: any;
 }
 
 export declare type HeapEntries = {[key: number]: JsHeapEntry | null};
@@ -16,7 +17,7 @@ export class JsProxyHeap
     putEntry(entry: JsHeapEntry)
     {
         if (this.heapEntries[entry.__ptr])
-            throw new Error("Object is already on the heap");
+            throw new Error("Object is already on the heap: " + JSON.stringify(entry));
 
         this.heapEntries[entry.__ptr] = entry;
     }
@@ -38,7 +39,8 @@ export class JsProxyHeap
 
             entry =
             {
-                __ptr: boxedInstance.__ptr, // TODO: can use ES6 syntax if boxedInstance is typed ??
+                __ptr: boxedInstance.__ptr,
+                __typehash: clazz.__javaClassHash,
                 __val: instance,
             }
             this.heapEntries[entry.__ptr] = entry;

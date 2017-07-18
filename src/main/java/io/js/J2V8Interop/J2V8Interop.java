@@ -35,7 +35,7 @@ public class J2V8Interop {
         if (rtExists)
             throw new RuntimeException(alreadyInjectedMsg);
 
-        runtime.executeVoidScript("__runtimeHash = '" + runtime.hashCode() + "';");
+        runtime.executeVoidScript("__runtimeHash = '" + System.identityHashCode(runtime) + "';");
 
         InteropRuntime rt =new InteropRuntime(runtime);
         runtimes.put(runtime, rt);
@@ -49,8 +49,14 @@ public class J2V8Interop {
         JavaCreateInstanceMixin.inject(rt);
         JavaCallMethodMixin.inject(rt);
 
+        // introduce J2V8 object to global scope
         V8Object j2v8 = runtime.executeObjectScript("global.J2V8");
         runtime.add("J2V8", j2v8);
+
+        j2v8.add("BOOLEAN_HASH", System.identityHashCode(Boolean.class));
+        j2v8.add("INTEGER_HASH", System.identityHashCode(Integer.class));
+        j2v8.add("STRING_HASH", System.identityHashCode(String.class));
+
         j2v8.release();
 
         return rt;

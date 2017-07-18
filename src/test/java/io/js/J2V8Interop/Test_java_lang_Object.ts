@@ -16,8 +16,8 @@
     let aHash = a.hashCode();
     let bHash = b.hashCode();
 
-    print("aHash = " + aHash);
-    print("bHash = " + bHash);
+    printDebug("aHash = " + aHash);
+    printDebug("bHash = " + bHash);
 
     assert(typeof aHash === 'number', "typeof aHash === 'number'");
     assert(typeof bHash === 'number', "typeof bHash === 'number'");

@@ -5,7 +5,15 @@ import {JsProxyHeap, JsHeapEntry} from './JsProxyHeap';
 
 declare function print(message: string): void;
 declare function __javaCreateInstance(target_class: JavaClassProxy, instance: any): JsHeapEntry;
-declare function __javaCallMethod(__ptr: number, methodHash: number, args: any[]): any;
+declare function __javaCallMethod(__thisPtr: number, methodName: string, methodHash: number, args: any[]): JsHeapEntry;
+
+export declare type JsConstrutible =
+{
+    new(...args: any[]): any;
+    __javaPackage: string;
+    __javaClassName: string;
+    __javaClassHash: number;
+} | null;
 
 interface JavaClassProxy
 {
@@ -25,7 +33,7 @@ class JavaInstanceProvider
 }
 
 declare var $__CtorSuper__$: any;
-declare var $__MethodHash__$: number;
+// declare var $__MethodHash__$: number;
 // declare var $__javaInstancePtr__$: number;
 
 class $__JsProxySuperClassName__$ { constructor(...args: any[]) { args; } }
@@ -72,6 +80,15 @@ function $__JsCtor__$($__CtorArgs__$: any)
     $__CtorArgs__$;
 }
 
+// TODO: temporary TS lazy workarround for hash constants access
+declare var J2V8: any;
+
+interface JsArg extends JsHeapEntry
+{
+    __cast_as?: JsHeapEntry; // TODO: should be JavaTypeInfo
+    __cast_value?: JsHeapEntry;
+}
+
 function $__JsMethod__$($__MethodArgs__$: any)
 {
     $__MethodArgs__$;
@@ -82,20 +99,58 @@ function $__JsMethod__$($__MethodArgs__$: any)
     if (!this.__ptr)
     {
         print(`Warning: ignoring JS method-call "function $__JsMethod__$" because the call-target is not defined`);
-        return;
+        throw new Error("this == null");
+        // return;
     }
 
     // TODO: proper marshalling of JS values to Java values
-    let boxedArgs = _.map(arguments, arg =>
+    let boxedArgs = _.map(arguments, (arg: JsArg & number) =>
     {
-        if (arg.__ptr)
-            return { __ptr: arg.__ptr };
+        if (arg.__cast_as && arg.__cast_value !== undefined && arg.__cast_value !== null)
+        {
+            if (arg.__cast_value.__ptr)
+                return {
+                    __ptr: arg.__cast_value.__ptr,
+                    __typehash: (arg.__cast_as as any).__javaClassHash, // TODO: cleanup hash|__typehash|__javaClassHash
+                };
+            else
+                return {
+                    __typehash: (arg.__cast_as as any).__javaClassHash, // TODO: cleanup hash|__typehash|__javaClassHash
+                    __val: arg.__cast_value,
+                };
+        }
 
-        return { __val: arg };
+        if (arg.__ptr)
+            // return { __ptr: arg.__ptr };
+            return arg; // TODO: this might be unsafe, because we trust the rest of the code to not mutate this object
+
+        let typehash: number;
+
+        // TODO: experimental prototyping code, needs full implementation
+        // TODO: this might be redundant since if no typehash is passed,
+        // the java side will fill it in anyways (this is a question of performance optimization)
+        if (Number.isInteger(arg))
+            typehash = J2V8.INTEGER_HASH;
+        else if(typeof arg === 'string')
+            typehash = J2V8.STRING_HASH;
+        else if(typeof arg === 'boolean')
+            typehash = J2V8.BOOLEAN_HASH;
+        else
+            typehash = -1;
+
+        return { __val: arg, __typehash: typehash };
     });
+
+    let argsListHash = boxedArgs.reduce((acc, val) =>
+    {
+        return acc ^ val.__typehash;
+    }, 0);
+
+    // let javaMethodHash = this.prototype['function $__JsMethod__$'];
+
     // print("jsBoxedArgs: " + JSON.stringify(marshalledArgs));
 
-    let returnBox = __javaCallMethod(this.__ptr, $__MethodHash__$, boxedArgs);
+    let returnBox = __javaCallMethod(this.__ptr, "function $__JsMethod__$", argsListHash, boxedArgs);
 
     if (returnBox.__ptr)
     {
@@ -116,7 +171,7 @@ const JsMethodTemplateString: string = $__JsMethod__$.toString();
 
 export class JsClassGenerator2
 {
-    public static createClass(javaType: JavaTypeInfo): {new(...args: any[]): any}
+    public static createClass(javaType: JavaTypeInfo): JsConstrutible
     {
         //print("template " + JsProxyClassTemplateString);
         let classCode: string = /*"(function() {" + */JsProxyClassTemplateString;
@@ -168,6 +223,13 @@ export class JsClassGenerator2
         {
             let method = javaType.methods[methodName];
 
+            // TODO: why is this check suddenly necessary ??!!
+            if (!method.name)
+            {
+                printDebug("skipping method...");
+                continue;
+            }
+
             let methodCode = JsMethodTemplateString;
             methodCode = methodCode.replace(/function \$__JsMethod__\$/g, method.name);
             methodCode = methodCode.replace(/\$__MethodArgs__\$/g, _.map(method.args, x => x.name).join(", "));
@@ -195,9 +257,11 @@ export class JsClassGenerator2
         // print("#methods: " + Object.keys(javaType.methods).length);
         // print("#constructors: " + Object.keys(javaType.constructors).length);
 
-        // print(classCode);
+        // printDebug(classCode);
         // TODO: for debugging only
         //classCode = `class ${javaType.name} {}`;
         return eval(classCode);
     }
 }
+
+declare function printDebug(x: string): void;

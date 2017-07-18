@@ -29,10 +29,21 @@ class TestUtils {
         }
         catch (V8ScriptExecutionException e)
         {
-            // e.printStackTrace();
+            e.printStackTrace();
             String st = e.getJSStackTrace();
-            System.out.println(st);
+            System.out.println("JS stacktrace: " + st);
             Assert.fail(e.getJSMessage());
         }
+    }
+
+    public static void injectDebugUtils(V8 v8)
+    {
+        v8.registerJavaMethod(new JavaVoidCallback()
+        {
+            public void invoke(final V8Object receiver, final V8Array parameters) {
+                String msg = parameters.getString(0);
+                System.out.println(msg);
+            }
+        }, "printDebug");
     }
 }

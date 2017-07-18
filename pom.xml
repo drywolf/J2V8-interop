@@ -1,27 +1,27 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
- 
+
   <groupId>J2V8.utilities</groupId>
   <artifactId>J2V8-interop</artifactId>
   <version>0.1-SNAPSHOT</version>
   <packaging>jar</packaging>
-  
+
   <dependencies>
-    <!--<dependency>
+    <dependency>
         <groupId>local</groupId>
         <artifactId>J2V8</artifactId>
         <version>SNAPSHOT</version>
         <scope>system</scope>
-        <systemPath>C:/code/Github-Fork/J2V8/target/j2v8_win32_x86_64-4.6.0.jar</systemPath>
-    </dependency>-->
+        <systemPath>C:/code/Github-Fork/J2V8/build.out/j2v8_win32_x86_64-4.8.0-SNAPSHOT.jar</systemPath>
+    </dependency>
 
     <!-- https://mvnrepository.com/artifact/com.eclipsesource.j2v8/j2v8_win32_x86_64 -->
-    <dependency>
+    <!-- <dependency>
         <groupId>com.eclipsesource.j2v8</groupId>
         <artifactId>j2v8_win32_x86_64</artifactId>
         <version>4.6.0</version>
-    </dependency>
+    </dependency> -->
 
     <!-- https://mvnrepository.com/artifact/org.javassist/javassist -->
     <dependency>
@@ -74,7 +74,7 @@
             </plugin>
 
             <plugin>
-                <!-- configure the logging properties file to use when tests are run --> 
+                <!-- configure the logging properties file to use when tests are run -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.14</version>
